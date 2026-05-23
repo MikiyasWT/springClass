@@ -1,11 +1,16 @@
 package com.kai.practice.clinic_practice.model;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class Patient {
 
     public Patient() {}
 
     private String id;
+
+    @NotBlank(message = "givenName is required")
     private String givenName;
+    @NotBlank(message = "familyName is required")
     private String familyName;
 
 

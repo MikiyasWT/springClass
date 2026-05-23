@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
@@ -38,13 +39,13 @@ public class PatientController {
    }
 
    @PostMapping
-   public ResponseEntity<Patient> create(@RequestBody Patient patient) {
+   public ResponseEntity<Patient> create(@Valid @RequestBody Patient patient) {
       Patient created = patientService.create(patient);
       return ResponseEntity.status(HttpStatus.CREATED).body(created);
    }
 
    @PutMapping("/{id}")
-   public ResponseEntity<Patient> update(@PathVariable String id, @RequestBody Patient patient) {
+   public ResponseEntity<Patient> update(@PathVariable String id, @Valid @RequestBody Patient patient) {
       return patientService.update(id, patient)
                  .map(ResponseEntity::ok)
                  .orElse(ResponseEntity.notFound().build());
@@ -52,11 +53,14 @@ public class PatientController {
 
 
    @DeleteMapping("/{id}")
-   public ResponseEntity<Void> delete(String id) {
+   public ResponseEntity<Void> delete(@PathVariable String id) {
       if(patientService.delete(id)) {
         return ResponseEntity.noContent().build();
       }
 
       return ResponseEntity.notFound().build();
    }
-} 
+}
+
+
+
