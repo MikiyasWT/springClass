@@ -27,35 +27,27 @@ public class PatientController {
 
    @GetMapping
    public List<Patient> list() {
-    return patientService.getAll();
+       return patientService.getAll();
    }
 
    @GetMapping("/{id}")
    public ResponseEntity<Patient> one(@PathVariable String id) {
-        return patientService.getById(id)
+      return patientService.getById(id)
                  .map(ResponseEntity::ok)
                  .orElse(ResponseEntity.notFound().build());
    }
 
    @PostMapping
    public ResponseEntity<Patient> create(@RequestBody Patient patient) {
-    try{
-       Patient created = patientService.create(patient);
-       return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    } catch(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().build();
-    }
+      Patient created = patientService.create(patient);
+      return ResponseEntity.status(HttpStatus.CREATED).body(created);
    }
 
    @PutMapping("/{id}")
    public ResponseEntity<Patient> update(@PathVariable String id, @RequestBody Patient patient) {
-     try{
-         return patientService.update(id, patient)
+      return patientService.update(id, patient)
                  .map(ResponseEntity::ok)
                  .orElse(ResponseEntity.notFound().build());
-     } catch(IllegalArgumentException ex) {
-          return ResponseEntity.badRequest().build();
-     }
    }
 
 

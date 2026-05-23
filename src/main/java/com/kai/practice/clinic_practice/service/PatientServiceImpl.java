@@ -45,6 +45,7 @@ public class PatientServiceImpl implements PatientService {
                 patient.getId(), patient.getGivenName(), patient.getFamilyName());
         return patient;
     }
+    
    @Override
    public Optional<Patient> update(String id, Patient patient) {
     if(!store.containsKey(id)) {
