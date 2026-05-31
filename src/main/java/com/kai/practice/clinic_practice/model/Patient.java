@@ -2,10 +2,17 @@ package com.kai.practice.clinic_practice.model;
 
 import jakarta.validation.constraints.NotBlank;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+
+@Entity
+@Table(name = "patients")
 public class Patient {
 
     public Patient() {}
-
+    @Id
     private String id;
 
     @NotBlank(message = "givenName is required")
@@ -23,6 +30,7 @@ public class Patient {
     public String getId() {
         return id;
     }
+
 
     public void setId(String id) {
         this.id = id;

@@ -1,0 +1,272 @@
+{
+  "info": {
+    "name": "Clinic Practice API",
+    "description": "Local Spring Boot API — patients + visits.\n\nPrerequisites:\n1. docker compose up -d\n2. ./mvnw spring-boot:run\n\nBase URL: http://localhost:8080",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Hello",
+      "item": [
+        {
+          "name": "GET Hello",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/hello"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Patients",
+      "item": [
+        {
+          "name": "GET List all patients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/patients"
+          }
+        },
+        {
+          "name": "GET Patient by id (seed patient 1)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/patients/1"
+          }
+        },
+        {
+          "name": "GET Patient not found",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/patients/xyz-missing"
+          }
+        },
+        {
+          "name": "POST Create patient — Helen",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"p10\",\n  \"givenName\": \"Helen\",\n  \"familyName\": \"Bekele\"\n}"
+            },
+            "url": "{{baseUrl}}/api/patients"
+          }
+        },
+        {
+          "name": "POST Create patient — Daniel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"p11\",\n  \"givenName\": \"Daniel\",\n  \"familyName\": \"Alemu\"\n}"
+            },
+            "url": "{{baseUrl}}/api/patients"
+          }
+        },
+        {
+          "name": "PUT Update patient 1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"givenName\": \"Meron\",\n  \"familyName\": \"Tadesse\"\n}"
+            },
+            "url": "{{baseUrl}}/api/patients/1"
+          }
+        },
+        {
+          "name": "DELETE Patient p11",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/patients/p11"
+          }
+        },
+        {
+          "name": "POST Validation error — empty givenName",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"p99\",\n  \"givenName\": \"\",\n  \"familyName\": \"Test\"\n}"
+            },
+            "url": "{{baseUrl}}/api/patients"
+          }
+        },
+        {
+          "name": "POST Duplicate id — expect 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"1\",\n  \"givenName\": \"Duplicate\",\n  \"familyName\": \"Patient\"\n}"
+            },
+            "url": "{{baseUrl}}/api/patients"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Visits",
+      "item": [
+        {
+          "name": "GET List all visits",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/visits"
+          }
+        },
+        {
+          "name": "GET Visits for patient 1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/visits/patient/1"
+          }
+        },
+        {
+          "name": "GET Visit by id (seed v1)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/visits/v1"
+          }
+        },
+        {
+          "name": "POST Create visit — blood pressure",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"v10\",\n  \"patientId\": \"1\",\n  \"visitDate\": \"2026-05-31\",\n  \"reason\": \"Blood pressure check\"\n}"
+            },
+            "url": "{{baseUrl}}/api/visits"
+          }
+        },
+        {
+          "name": "POST Create visit — for new patient p10",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"v11\",\n  \"patientId\": \"p10\",\n  \"visitDate\": \"2026-06-01\",\n  \"reason\": \"First visit after registration\"\n}"
+            },
+            "url": "{{baseUrl}}/api/visits"
+          }
+        },
+        {
+          "name": "PUT Update visit v10",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": \"1\",\n  \"visitDate\": \"2026-05-31\",\n  \"reason\": \"Blood pressure check — follow-up notes added\"\n}"
+            },
+            "url": "{{baseUrl}}/api/visits/v10"
+          }
+        },
+        {
+          "name": "DELETE Visit v11",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/visits/v11"
+          }
+        },
+        {
+          "name": "POST Patient not found — expect 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"v99\",\n  \"patientId\": \"no-such-patient\",\n  \"visitDate\": \"2026-05-31\",\n  \"reason\": \"Should fail\"\n}"
+            },
+            "url": "{{baseUrl}}/api/visits"
+          }
+        },
+        {
+          "name": "POST Validation error — empty reason",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"v98\",\n  \"patientId\": \"1\",\n  \"visitDate\": \"2026-05-31\",\n  \"reason\": \"\"\n}"
+            },
+            "url": "{{baseUrl}}/api/visits"
+          }
+        }
+      ]
+    }
+  ]
+}

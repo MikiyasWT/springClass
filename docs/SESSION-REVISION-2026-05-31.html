@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 11pt; line-height: 1.45; margin: 2cm; color: #222; }
+h1 { font-size: 22pt; border-bottom: 2px solid #333; padding-bottom: 8px; }
+h2 { font-size: 15pt; margin-top: 24px; color: #1a1a1a; }
+h3 { font-size: 12pt; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 10pt; }
+th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; }
+th { background: #f0f0f0; }
+code { background: #f4f4f4; padding: 1px 4px; font-size: 9.5pt; }
+pre { background: #f4f4f4; padding: 10px; font-size: 9pt; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+hr { border: none; border-top: 1px solid #ddd; margin: 20px 0; }
+</style></head><body><h1>Clinic Practice — Session Revision Manual</h1>
+<p><strong>Project:</strong> clinic-practice<br />
+<strong>Author:</strong> Kai (learning track toward OpenMRS)<br />
+<strong>Date:</strong> 31 May 2026<br />
+<strong>Stack:</strong> Spring Boot 4.x · Java 17 · Spring Data JPA · MySQL (Docker) · Postman</p>
+<hr />
+<h2>1. What this project is</h2>
+<p>A small <strong>REST API</strong> for a fake clinic, separate from <code>openmrs-dev</code>. You practice the same backend ideas OpenMRS uses:</p>
+<pre><code>HTTP request → Controller → Service → Repository → Database
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Your classes</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Web</td>
+<td><code>PatientController</code>, <code>VisitController</code></td>
+<td>URLs, HTTP status codes, JSON in/out</td>
+</tr>
+<tr>
+<td>Service</td>
+<td><code>PatientServiceImpl</code>, <code>VisitServiceImpl</code></td>
+<td>Business rules</td>
+</tr>
+<tr>
+<td>Repository</td>
+<td><code>PatientRepository</code>, <code>VisitRepository</code></td>
+<td>Database access (Spring generates SQL)</td>
+</tr>
+<tr>
+<td>Model</td>
+<td><code>Patient</code>, <code>Visit</code></td>
+<td>Tables + JSON shape (<code>@Entity</code>)</td>
+</tr>
+<tr>
+<td>Config</td>
+<td><code>DataInitializer</code></td>
+<td>Seed data on startup</td>
+</tr>
+<tr>
+<td>Errors</td>
+<td><code>GlobalExceptionHandler</code>, <code>ApiError</code></td>
+<td>Central 400 responses</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>2. Sessions completed</h2>
+<table>
+<thead>
+<tr>
+<th>Session</th>
+<th>Topic</th>
+<th>Key skills</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A–B</td>
+<td>Spring Boot + <code>HelloController</code></td>
+<td><code>@SpringBootApplication</code>, <code>./mvnw spring-boot:run</code></td>
+</tr>
+<tr>
+<td>C</td>
+<td>Patients GET</td>
+<td><code>@RestController</code>, <code>@GetMapping</code>, service + in-memory <code>Map</code></td>
+</tr>
+<tr>
+<td>D</td>
+<td>POST create</td>
+<td><code>@PostMapping</code>, <code>@RequestBody</code>, HTTP 201</td>
+</tr>
+<tr>
+<td>E</td>
+<td>PUT + DELETE</td>
+<td><code>@PathVariable</code>, <code>Optional</code>, 204 No Content</td>
+</tr>
+<tr>
+<td>F</td>
+<td><code>GlobalExceptionHandler</code></td>
+<td><code>@ControllerAdvice</code>, one place for 400 errors</td>
+</tr>
+<tr>
+<td>G3</td>
+<td>Validation</td>
+<td><code>@Valid</code>, <code>@NotBlank</code>, <code>MethodArgumentNotValidException</code></td>
+</tr>
+<tr>
+<td>G2</td>
+<td>MySQL + JPA</td>
+<td>Docker MySQL, <code>JpaRepository</code>, <code>ddl-auto=update</code></td>
+</tr>
+<tr>
+<td>Visits</td>
+<td>Second table</td>
+<td><code>findByPatientId</code>, FK-style <code>patientId</code>, full CRUD</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3. Architecture diagram</h2>
+<pre><code>Browser / Postman / curl
+        │
+        ▼
+┌───────────────────┐
+│  REST Controllers │  /api/patients, /api/visits
+└─────────┬─────────┘
+          ▼
+┌───────────────────┐
+│     Services      │  rules: duplicate id, patient must exist
+└─────────┬─────────┘
+          ▼
+┌───────────────────┐
+│   Repositories    │  JpaRepository → Hibernate
+└─────────┬─────────┘
+          ▼
+┌───────────────────┐
+│  Docker MySQL     │  port 3307 → database clinic_practice
+└───────────────────┘
+</code></pre>
+<hr />
+<h2>4. API reference</h2>
+<p><strong>Base URL:</strong> <code>http://localhost:8080</code></p>
+<h3>Patients</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Success</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/api/patients</code></td>
+<td>200</td>
+<td>List all</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/patients/{id}</code></td>
+<td>200 / 404</td>
+<td>One patient</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/patients</code></td>
+<td>201</td>
+<td>Body needs <code>id</code>, <code>givenName</code>, <code>familyName</code></td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/patients/{id}</code></td>
+<td>200 / 404</td>
+<td>Body: names only (id from URL)</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/api/patients/{id}</code></td>
+<td>204 / 404</td>
+<td>No body</td>
+</tr>
+</tbody>
+</table>
+<h3>Visits</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Success</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/api/visits</code></td>
+<td>200</td>
+<td>List all</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/visits/patient/{patientId}</code></td>
+<td>200</td>
+<td>Visits for one patient</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/visits/{id}</code></td>
+<td>200 / 404</td>
+<td>One visit</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/visits</code></td>
+<td>201</td>
+<td><code>patientId</code> must exist in <code>patients</code></td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/visits/{id}</code></td>
+<td>200 / 404</td>
+<td>Body must include <code>patientId</code></td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/api/visits/{id}</code></td>
+<td>204 / 404</td>
+<td>No body</td>
+</tr>
+</tbody>
+</table>
+<h3>Hello</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/api/hello</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>5. How to run the project</h2>
+<h3>Start database (Docker)</h3>
+<pre><code class="language-bash">cd clinic-practice
+docker compose up -d
+docker compose ps    # wait for healthy
+</code></pre>
+<p>MySQL is on <strong>host port 3307</strong> (not 3306 — local MariaDB uses 3306).</p>
+<h3>Start application</h3>
+<pre><code class="language-bash">export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+./mvnw spring-boot:run
+</code></pre>
+<p>Wait for: <code>Started ClinicPracticeApplication</code></p>
+<h3>Test database connection</h3>
+<pre><code class="language-bash">mysql -h 127.0.0.1 -P 3307 -u clinic -pclinic_pass clinic_practice -e &quot;SHOW TABLES;&quot;
+</code></pre>
+<h3>Stop</h3>
+<pre><code class="language-bash"># App: Ctrl+C
+docker compose stop
+</code></pre>
+<hr />
+<h2>6. Configuration (<code>application.properties</code>)</h2>
+<pre><code class="language-properties">spring.datasource.url=jdbc:mysql://localhost:3307/clinic_practice
+spring.datasource.username=clinic
+spring.datasource.password=clinic_pass
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>3307</code></td>
+<td>Docker MySQL port on your machine</td>
+</tr>
+<tr>
+<td><code>ddl-auto=update</code></td>
+<td>Hibernate creates/updates tables (learning only; OpenMRS uses Liquibase)</td>
+</tr>
+<tr>
+<td><code>show-sql=true</code></td>
+<td>Print SQL in console while learning</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>7. Important Spring annotations</h2>
+<table>
+<thead>
+<tr>
+<th>Annotation</th>
+<th>Where</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@Entity</code></td>
+<td>Model</td>
+<td>This class is a database table</td>
+</tr>
+<tr>
+<td><code>@Id</code></td>
+<td>Model field</td>
+<td>Primary key</td>
+</tr>
+<tr>
+<td><code>@Table(name = "...")</code></td>
+<td>Model</td>
+<td>Table name</td>
+</tr>
+<tr>
+<td><code>@RestController</code></td>
+<td>Controller</td>
+<td>REST API + JSON responses</td>
+</tr>
+<tr>
+<td><code>@RequestMapping("/api/...")</code></td>
+<td>Controller</td>
+<td>Base path</td>
+</tr>
+<tr>
+<td><code>@GetMapping</code> / <code>@PostMapping</code> / <code>@PutMapping</code> / <code>@DeleteMapping</code></td>
+<td>Method</td>
+<td>HTTP verb + path</td>
+</tr>
+<tr>
+<td><code>@PathVariable</code></td>
+<td>Method param</td>
+<td>Bind <code>{id}</code> from URL — <strong>required</strong></td>
+</tr>
+<tr>
+<td><code>@RequestBody</code></td>
+<td>Method param</td>
+<td>JSON → Java object</td>
+</tr>
+<tr>
+<td><code>@Valid</code></td>
+<td>Method param</td>
+<td>Run validation annotations on body</td>
+</tr>
+<tr>
+<td><code>@Service</code></td>
+<td>Service impl</td>
+<td>Spring bean for business logic</td>
+</tr>
+<tr>
+<td><code>@ControllerAdvice</code></td>
+<td>Exception handler</td>
+<td>Global error handling</td>
+</tr>
+<tr>
+<td><code>@NotBlank</code></td>
+<td>Model field</td>
+<td>Validation: not null/empty</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>8. JPA repository methods (memorize these)</h2>
+<table>
+<thead>
+<tr>
+<th>You might write (wrong)</th>
+<th>Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>getAll()</code></td>
+<td><code>findAll()</code></td>
+</tr>
+<tr>
+<td><code>existById()</code></td>
+<td><code>existsById()</code></td>
+</tr>
+<tr>
+<td><code>findOne()</code></td>
+<td><code>findById()</code> → returns <code>Optional</code></td>
+</tr>
+<tr>
+<td><code>deleteByID()</code></td>
+<td><code>deleteById()</code></td>
+</tr>
+</tbody>
+</table>
+<p>Custom query by naming:</p>
+<pre><code class="language-java">List&lt;Visit&gt; findByPatientId(String patientId);
+</code></pre>
+<hr />
+<h2>9. Bugs you hit and fixes (revision gold)</h2>
+<h3>Typos break compile</h3>
+<ul>
+<li><code>patientRepositroy</code> vs <code>patientRepository</code> — Java names must match exactly</li>
+<li><code>JpaRepositroy</code> → <code>JpaRepository</code></li>
+<li>Missing semicolon in constructor</li>
+</ul>
+<h3><code>@PathVariable</code> missing</h3>
+<p>URL: <code>/api/visits/v10</code> but parameter <code>String id</code> without <code>@PathVariable</code> → <code>id</code> is <strong>null</strong> →<br />
+<code>existsById(null)</code> → <strong>"The given id must not be null"</strong></p>
+<p><strong>Fix:</strong> <code>delete(@PathVariable String id)</code></p>
+<h3><code>@PutMapping</code> without <code>/{id}</code></h3>
+<p><code>@PutMapping</code> alone = only <code>PUT /api/visits</code>, not <code>PUT /api/visits/v10</code> → <strong>405 Method Not Allowed</strong></p>
+<p><strong>Fix:</strong> <code>@PutMapping("/{id}")</code></p>
+<h3>DELETE logic inverted</h3>
+<pre><code class="language-java">// WRONG — returns false when visit EXISTS
+if (visitRepository.existsById(id)) {
+    return false;
+}
+
+// CORRECT
+if (!visitRepository.existsById(id)) {
+    return false;
+}
+visitRepository.deleteById(id);
+return true;
+</code></pre>
+<h3>PUT body missing <code>patientId</code></h3>
+<p>Update calls <code>patientRepository.existsById(visit.getPatientId())</code>. If body has no <code>patientId</code>, same <strong>"The given id must not be null"</strong> error.</p>
+<h3>Wrong MySQL port</h3>
+<p><code>3397</code> in properties → <strong>Connection refused</strong>. Docker uses <strong>3307</strong>.</p>
+<h3>Maven BUILD SUCCESS vs app failed</h3>
+<p>Maven can print <strong>BUILD SUCCESS</strong> even when the app crashed on startup. Look for <code>Application run failed</code> in logs.</p>
+<hr />
+<h2>10. OpenMRS comparison (G1)</h2>
+<table>
+<thead>
+<tr>
+<th>Clinic practice (you)</th>
+<th>OpenMRS appointments module</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@RestController</code></td>
+<td><code>@Controller</code> + <code>@ResponseBody</code> (older style)</td>
+</tr>
+<tr>
+<td><code>@GetMapping("/{id}")</code></td>
+<td><code>@RequestMapping(method = GET, value="/{uuid}")</code></td>
+</tr>
+<tr>
+<td>Constructor injection</td>
+<td>Often <code>@Autowired</code> fields</td>
+</tr>
+<tr>
+<td>Spring Boot embedded Tomcat</td>
+<td>WAR on external Tomcat</td>
+</tr>
+<tr>
+<td><code>/api/patients</code></td>
+<td><code>/openmrs/ws/rest/v1/appointments</code></td>
+</tr>
+<tr>
+<td><code>ddl-auto=update</code></td>
+<td>Liquibase XML migrations</td>
+</tr>
+<tr>
+<td>Direct <code>Patient</code> entity in API</td>
+<td>Often DTO + Mapper (<code>AppointmentRequest</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Same idea:</strong> Controller → Service → data. Your app is modern Boot; OpenMRS modules are older style but the layers match.</p>
+<hr />
+<h2>11. Postman</h2>
+<p>Import: <code>postman/clinic-practice.postman_collection.json</code><br />
+Copy-paste bodies: <code>postman/POSTMAN-TEST-DATA.md</code></p>
+<p><strong>Remember:</strong> Browsers only do GET easily. Use Postman or <code>curl</code> for POST, PUT, DELETE.</p>
+<hr />
+<h2>12. Seed data (<code>DataInitializer</code>)</h2>
+<p>On empty database:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>id</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Patient</td>
+<td><code>1</code>, <code>2</code></td>
+<td>First / Second Patient</td>
+</tr>
+<tr>
+<td>Visit</td>
+<td><code>v1</code>, <code>v2</code></td>
+<td>Both for patient <code>1</code></td>
+</tr>
+</tbody>
+</table>
+<p>Runs only when <code>count() == 0</code> for each table.</p>
+<hr />
+<h2>13. What to learn next</h2>
+<ol>
+<li><strong>DTOs</strong> — separate API JSON from <code>@Entity</code> (like OpenMRS <code>AppointmentRequest</code>)</li>
+<li><strong>OpenMRS module</strong> — one REST endpoint in <code>openmrs-dev</code> with SDK</li>
+<li><strong><code>@ManyToOne</code></strong> — JPA relationship Visit → Patient</li>
+<li><strong>Liquibase</strong> — how OpenMRS manages schema instead of <code>ddl-auto</code></li>
+<li><strong>Spring Security</strong> — auth on REST (OpenMRS uses Basic Auth)</li>
+</ol>
+<hr />
+<h2>14. Quick commands cheat sheet</h2>
+<pre><code class="language-bash"># Docker DB
+docker compose up -d
+docker compose ps
+
+# Run app
+./mvnw spring-boot:run
+
+# Compile only
+./mvnw compile
+
+# MySQL shell
+mysql -h 127.0.0.1 -P 3307 -u clinic -pclinic_pass clinic_practice
+
+# Example curl
+curl http://localhost:8080/api/patients
+curl -X POST http://localhost:8080/api/visits \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;id&quot;:&quot;v10&quot;,&quot;patientId&quot;:&quot;1&quot;,&quot;visitDate&quot;:&quot;2026-05-31&quot;,&quot;reason&quot;:&quot;Checkup&quot;}'
+</code></pre>
+<hr />
+<p><em>End of revision manual — clinic-practice learning project.</em></p></body></html>
