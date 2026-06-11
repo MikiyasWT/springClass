@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Clinic Practice API",
-    "description": "Local Spring Boot API — patients + visits.\n\nPrerequisites:\n1. docker compose up -d\n2. ./mvnw spring-boot:run\n\nBase URL: http://localhost:8080",
+    "description": "Local Spring Boot API — patients, visits, providers.\n\nPrerequisites:\n1. docker compose up -d\n2. ./mvnw spring-boot:run\n\nBase URL: http://localhost:8080\n\nRun Provider folder top-to-bottom for full CRUD + error coverage.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -264,6 +264,464 @@
               "raw": "{\n  \"id\": \"v98\",\n  \"patientId\": \"1\",\n  \"visitDate\": \"2026-05-31\",\n  \"reason\": \"\"\n}"
             },
             "url": "{{baseUrl}}/api/visits"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Providers",
+      "description": "Provider CRUD at /api/providers. Seed ids: 1 (MCH), 2 (Dentistry). Run in order.",
+      "item": [
+        {
+          "name": "GET List all providers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response is a JSON array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/providers"
+          }
+        },
+        {
+          "name": "GET Provider by id (seed 1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Provider id is 1', function () {",
+                  "    pm.expect(pm.response.json().id).to.eql('1');",
+                  "});",
+                  "pm.test('Has specialty field', function () {",
+                  "    pm.expect(pm.response.json().specialty).to.eql('MCH');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/providers/1"
+          }
+        },
+        {
+          "name": "GET Provider by id (seed 2)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Specialty is Dentistry', function () {",
+                  "    pm.expect(pm.response.json().specialty).to.eql('Dentistry');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/providers/2"
+          }
+        },
+        {
+          "name": "GET Provider not found — expect 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/providers/xyz-missing"
+          }
+        },
+        {
+          "name": "POST Create provider — dr3 Amina",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Response has all fields', function () {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.id).to.eql('dr3');",
+                  "    pm.expect(body.givenName).to.eql('Amina');",
+                  "    pm.expect(body.familyName).to.eql('Hassan');",
+                  "    pm.expect(body.specialty).to.eql('Dermatology');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"dr3\",\n  \"givenName\": \"Amina\",\n  \"familyName\": \"Hassan\",\n  \"specialty\": \"Dermatology\"\n}"
+            },
+            "url": "{{baseUrl}}/api/providers"
+          }
+        },
+        {
+          "name": "POST Create provider — dr4 Yonas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Response id is dr4', function () {",
+                  "    pm.expect(pm.response.json().id).to.eql('dr4');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"dr4\",\n  \"givenName\": \"Yonas\",\n  \"familyName\": \"Kebede\",\n  \"specialty\": \"Cardiology\"\n}"
+            },
+            "url": "{{baseUrl}}/api/providers"
+          }
+        },
+        {
+          "name": "PUT Update provider 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Names updated', function () {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.id).to.eql('1');",
+                  "    pm.expect(body.givenName).to.eql('Sara');",
+                  "    pm.expect(body.familyName).to.eql('Bekele');",
+                  "    pm.expect(body.specialty).to.eql('General Practice');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"givenName\": \"Sara\",\n  \"familyName\": \"Bekele\",\n  \"specialty\": \"General Practice\"\n}"
+            },
+            "url": "{{baseUrl}}/api/providers/1"
+          }
+        },
+        {
+          "name": "PUT Provider not found — expect 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"givenName\": \"Ghost\",\n  \"familyName\": \"Provider\",\n  \"specialty\": \"None\"\n}"
+            },
+            "url": "{{baseUrl}}/api/providers/no-such-provider"
+          }
+        },
+        {
+          "name": "POST Validation error — empty givenName — expect 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Validation failed message', function () {",
+                  "    pm.expect(pm.response.json().message).to.eql('Validation failed');",
+                  "});",
+                  "pm.test('givenName field error present', function () {",
+                  "    pm.expect(pm.response.json().fieldErrors.givenName).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"dr99\",\n  \"givenName\": \"\",\n  \"familyName\": \"Test\",\n  \"specialty\": \"Surgery\"\n}"
+            },
+            "url": "{{baseUrl}}/api/providers"
+          }
+        },
+        {
+          "name": "POST Validation error — missing specialty — expect 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('specialty field error present', function () {",
+                  "    pm.expect(pm.response.json().fieldErrors.specialty).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"dr98\",\n  \"givenName\": \"Test\",\n  \"familyName\": \"Provider\"\n}"
+            },
+            "url": "{{baseUrl}}/api/providers"
+          }
+        },
+        {
+          "name": "PUT Validation error — empty specialty — expect 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('specialty field error present', function () {",
+                  "    pm.expect(pm.response.json().fieldErrors.specialty).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"givenName\": \"Valid\",\n  \"familyName\": \"Name\",\n  \"specialty\": \"\"\n}"
+            },
+            "url": "{{baseUrl}}/api/providers/2"
+          }
+        },
+        {
+          "name": "POST Duplicate id — expect 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Duplicate id message', function () {",
+                  "    pm.expect(pm.response.json().message).to.include('already exists');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"1\",\n  \"givenName\": \"Duplicate\",\n  \"familyName\": \"Provider\",\n  \"specialty\": \"MCH\"\n}"
+            },
+            "url": "{{baseUrl}}/api/providers"
+          }
+        },
+        {
+          "name": "DELETE Provider dr3 — expect 204",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 204 No Content', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/providers/dr3"
+          }
+        },
+        {
+          "name": "DELETE Provider dr4 — expect 204",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 204 No Content', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/providers/dr4"
+          }
+        },
+        {
+          "name": "DELETE Provider not found — expect 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/providers/xyz-missing"
+          }
+        },
+        {
+          "name": "GET Provider dr3 after delete — expect 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404 after delete', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/providers/dr3"
           }
         }
       ]

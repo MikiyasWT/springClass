@@ -84,6 +84,5 @@ public class VisitServiceImpl implements VisitService {
          log.warn("Deleted visit id={}", id);
          return true;
     }
-    
 }
 
