@@ -1,27 +1,17 @@
-package com.kai.practice.clinic_practice.model;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
+package com.kai.practice.clinic_practice.web.dto.visit;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "visits")
-public class Visit {
 
-    @Id
+public class VisitResponse {
+    
     private String id;
     private String patientId;
-    
-
     private LocalDate visitDate;
     private String reason;
 
-    public Visit() {
-    }
+    public VisitResponse() { }
 
-    public Visit(String id, String patientId, LocalDate visitDate, String reason) {
+    public VisitResponse(String id, String patientId, LocalDate visitDate, String reason) {
         this.id = id;
         this.patientId = patientId;
         this.visitDate = visitDate;
