@@ -13,7 +13,8 @@ public class Visit {
     @Id
     private String id;
     private String patientId;
-    
+
+    private String providerId;
 
     private LocalDate visitDate;
     private String reason;
@@ -21,9 +22,10 @@ public class Visit {
     public Visit() {
     }
 
-    public Visit(String id, String patientId, LocalDate visitDate, String reason) {
+    public Visit(String id, String patientId, String providerId, LocalDate visitDate, String reason) {
         this.id = id;
         this.patientId = patientId;
+        this.providerId = providerId;
         this.visitDate = visitDate;
         this.reason = reason;
     }
@@ -42,6 +44,15 @@ public class Visit {
 
     public void setPatientId(String patientId) {
         this.patientId = patientId;
+    }
+
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 
     public LocalDate getVisitDate() {

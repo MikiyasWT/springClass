@@ -30,8 +30,8 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if(visitRepository.count() == 0) {
-              visitRepository.save(new Visit("v1", "1", LocalDate.of(2026, 5, 1), "Initial consultation"));
-              visitRepository.save(new Visit("v2", "1", LocalDate.of(2026, 5, 20), "Follow-up"));
+              visitRepository.save(new Visit("v1", "1", "1", LocalDate.of(2026, 5, 1), "Initial consultation"));
+              visitRepository.save(new Visit("v2", "1", "1", LocalDate.of(2026, 5, 20), "Follow-up"));
         }
 
         if(providerRepository.count() == 0) {

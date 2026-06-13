@@ -8,4 +8,6 @@ import java.util.List;
 public interface VisitRepository extends JpaRepository<Visit, String> {
 
     List<Visit> findByPatientId(String patientId);
+
+    List<Visit> findByProviderId(String providerId);
 }

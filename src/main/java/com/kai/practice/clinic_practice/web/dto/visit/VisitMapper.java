@@ -15,6 +15,7 @@ public final class VisitMapper {
       return new Visit(
         request.getId(),
         request.getPatientId(),
+        request.getProviderId(),
         request.getVisitDate(),
         request.getReason()
       );
@@ -24,6 +25,7 @@ public final class VisitMapper {
         return new Visit(
             id,
             request.getPatientId(),
+            request.getProviderId(),
             request.getVisitDate(),
             request.getReason()
         );
@@ -33,6 +35,7 @@ public final class VisitMapper {
         return new VisitResponse(
             visit.getId(),
             visit.getPatientId(),
+            visit.getProviderId(),
             visit.getVisitDate(),
             visit.getReason()
         );

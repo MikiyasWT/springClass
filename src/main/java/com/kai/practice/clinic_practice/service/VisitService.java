@@ -10,6 +10,8 @@ public interface VisitService {
 
     Optional<Visit> getById(String id);
 
+    List<Visit> getByProviderId(String providerId);
+
     List<Visit> getByPatientId(String patientId);
 
     Visit create(Visit visit);

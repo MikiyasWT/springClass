@@ -43,6 +43,14 @@ public class VisitController {
                             .toList();
      }
 
+     @GetMapping("/provider/{providerId}")
+     public List<VisitResponse> byProvider(@PathVariable String providerId) {
+           return visitService.getByProviderId(providerId)
+                              .stream()
+                              .map(VisitMapper::toResponse)
+                              .toList();
+     }
+
      @GetMapping("/{id}")
      public ResponseEntity<VisitResponse> one(@PathVariable String id) {
           return visitService.getById(id)

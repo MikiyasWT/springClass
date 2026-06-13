@@ -12,17 +12,22 @@ public class VisitCreateRequest {
     @NotBlank(message = "patient id is required")
     private String patientId;
 
+    @NotBlank(message = "provider id is required")
+    private String providerId;
+
     private LocalDate visitDate;
 
     @NotBlank(message = "reason can't be blank")
     private String reason;
 
 
+
     public VisitCreateRequest () { }
     
-    public VisitCreateRequest (String id, String patientId, LocalDate visitDate, String reason) { 
+    public VisitCreateRequest (String id, String patientId, String providerId, LocalDate visitDate, String reason) { 
         this.id = id;
         this.patientId = patientId;
+        this.providerId = providerId;
         this.visitDate = visitDate;
         this.reason = reason;
     }
@@ -42,6 +47,14 @@ public class VisitCreateRequest {
 
     public void setPatientId (String patientId) {
           this.patientId = patientId;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 
     public LocalDate getVisitDate () {

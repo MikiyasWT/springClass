@@ -4,6 +4,7 @@ import com.kai.practice.clinic_practice.model.Visit;
 import com.kai.practice.clinic_practice.service.VisitService;
 import com.kai.practice.clinic_practice.repository.PatientRepository;
 import com.kai.practice.clinic_practice.repository.VisitRepository;
+import com.kai.practice.clinic_practice.repository.ProviderRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -19,11 +20,13 @@ public class VisitServiceImpl implements VisitService {
 
     private final VisitRepository visitRepository;
     private final PatientRepository  patientRepository; 
+    private final ProviderRepository providerRepository;
     
 
-    public VisitServiceImpl(VisitRepository visitRepository, PatientRepository  patientRepository) {
+    public VisitServiceImpl(VisitRepository visitRepository, PatientRepository  patientRepository, ProviderRepository providerRepository) {
         this.visitRepository =  visitRepository;
         this.patientRepository = patientRepository;
+        this.providerRepository = providerRepository;
     }
 
     @Override
@@ -42,10 +45,19 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
+    public List<Visit> getByProviderId(String providerId) {
+        return visitRepository.findByProviderId(providerId);
+    }
+
+    @Override
     public Visit create(Visit visit) {
      if(visit.getId() == null || visit.getId().isBlank()) {
            throw new IllegalArgumentException("Visit id is required");
      } 
+
+     if(!providerRepository.existsById(visit.getProviderId())) {
+         throw new IllegalArgumentException("No such provider:" + visit.getProviderId());
+     }
 
      if(!patientRepository.existsById(visit.getPatientId())) {
          throw new IllegalArgumentException("Patient not found: "+ visit.getPatientId());
@@ -69,7 +81,11 @@ public class VisitServiceImpl implements VisitService {
            throw new IllegalArgumentException("Patient not found");
         }
 
-        Visit updated = new Visit(id, visit.getPatientId(), visit.getVisitDate(), visit.getReason());
+        if(!providerRepository.existsById(visit.getProviderId())) {
+         throw new IllegalArgumentException("No such provider:" + visit.getProviderId());
+        }
+
+        Visit updated = new Visit(id, visit.getPatientId(), visit.getProviderId(), visit.getVisitDate(), visit.getReason());
         visitRepository.save(updated);
         log.warn("Updated visit id ={}", id);
         return Optional.of(updated);
