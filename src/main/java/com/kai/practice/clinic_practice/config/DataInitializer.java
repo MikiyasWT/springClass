@@ -29,14 +29,33 @@ public class DataInitializer implements CommandLineRunner {
               patientRepository.save(new Patient("2", "Second", "Patient"));
         }
 
-        if(visitRepository.count() == 0) {
-              visitRepository.save(new Visit("v1", "1", "1", LocalDate.of(2026, 5, 1), "Initial consultation"));
-              visitRepository.save(new Visit("v2", "1", "1", LocalDate.of(2026, 5, 20), "Follow-up"));
-        }
-
         if(providerRepository.count() == 0) {
             providerRepository.save(new Provider("1", "Proivder one givenName", "Provider one familyName", "MCH"));
              providerRepository.save(new Provider("2", "provider two givenName", "provider two familyName", "Dentistry"));
         }
+
+        if(visitRepository.count() == 0) {
+            //   visitRepository.save(new Visit("v1", "1", "1", LocalDate.of(2026, 5, 1), "Initial consultation"));
+            //   visitRepository.save(new Visit("v2", "1", "1", LocalDate.of(2026, 5, 20), "Follow-up"));
+            Patient patient1 = patientRepository.findById("1").orElseThrow();
+            Provider provider1 = providerRepository.findById("1").orElseThrow();
+
+            Visit v1 = new Visit();
+            v1.setId("v1");
+            v1.setPatient(patient1);
+            v1.setProvider(provider1);
+            v1.setVisitDate(LocalDate.of(2026, 5, 1));
+            v1.setReason("Inital Consultation");
+            visitRepository.save(v1);
+
+            Visit v2 = new Visit();
+            v2.setId("v2");
+            v2.setPatient(patient1);
+            v2.setProvider(provider1);
+            v2.setVisitDate(LocalDate.of(2026, 5, 20));
+            v2.setReason("Follow Up");
+            visitRepository.save(v2);
+        }
+
     }
 }

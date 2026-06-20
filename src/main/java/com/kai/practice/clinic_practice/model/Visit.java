@@ -3,6 +3,8 @@ package com.kai.practice.clinic_practice.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 import java.time.LocalDate;
 
@@ -12,9 +14,16 @@ public class Visit {
 
     @Id
     private String id;
-    private String patientId;
+    
+    //private String patientId;
+    @ManyToOne
+    @JoinColumn(name = "patient_id")
+    private Patient patient;
 
-    private String providerId;
+     //private String providerId;
+    @ManyToOne
+    @JoinColumn(name = "provider_id")
+    private Provider provider;
 
     private LocalDate visitDate;
     private String reason;
@@ -22,13 +31,6 @@ public class Visit {
     public Visit() {
     }
 
-    public Visit(String id, String patientId, String providerId, LocalDate visitDate, String reason) {
-        this.id = id;
-        this.patientId = patientId;
-        this.providerId = providerId;
-        this.visitDate = visitDate;
-        this.reason = reason;
-    }
 
     public String getId() {
         return id;
@@ -38,21 +40,30 @@ public class Visit {
         this.id = id;
     }
 
+    public Patient getPatient() {
+        return patient;
+    }
+
     public String getPatientId() {
-        return patientId;
+         return patient != null ? patient.getId() : null;
     }
 
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 
+
+
+    public Provider getProvider() {
+        return provider;
+    }
 
     public String getProviderId() {
-        return providerId;
+        return provider != null ? provider.getId() : null;
     }
 
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
+    public void setProvider(Provider provider) {
+        this.provider = provider;
     }
 
     public LocalDate getVisitDate() {
@@ -70,4 +81,7 @@ public class Visit {
     public void setReason(String reason) {
         this.reason = reason;
     }
+
+
+
 }

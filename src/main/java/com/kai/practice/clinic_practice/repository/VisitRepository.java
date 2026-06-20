@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface VisitRepository extends JpaRepository<Visit, String> {
 
-    List<Visit> findByPatientId(String patientId);
+    List<Visit> findByPatient_Id(String patientId);
 
-    List<Visit> findByProviderId(String providerId);
+    List<Visit> findByProvider_Id(String providerId);
 }

@@ -61,14 +61,16 @@ public class VisitController {
 
      @PostMapping
      public ResponseEntity<VisitResponse> create(@Valid @RequestBody VisitCreateRequest request) {
-        Visit created = visitService.create(VisitMapper.toEntity(request));                      
+        //Visit created = visitService.create(VisitMapper.toEntity(request));
+        Visit created = visitService.create(request);                      
         return ResponseEntity.status(HttpStatus.CREATED)
                              .body(VisitMapper.toResponse(created));
      }
 
      @PutMapping("/{id}")
      public ResponseEntity<VisitResponse> update(@PathVariable String id, @Valid @RequestBody VisitUpdateRequest request) {
-                    return visitService.update(id, VisitMapper.toEntity(id, request))
+        //return visitService.update(id, VisitMapper.toEntity(id, request))
+        return visitService.update(id,request)
                            .map(VisitMapper::toResponse)
                            .map(ResponseEntity::ok)
                            .orElse(ResponseEntity.notFound().build());
