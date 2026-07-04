@@ -71,10 +71,10 @@
 package com.kai.practice.clinic_practice.web;
 
 import com.kai.practice.clinic_practice.service.PatientService;
-import com.kai.practice.clinic_practice.web.dto.PatientCreateRequest;
-import com.kai.practice.clinic_practice.web.dto.PatientMapper;
-import com.kai.practice.clinic_practice.web.dto.PatientResponse;
-import com.kai.practice.clinic_practice.web.dto.PatientUpdateRequest;
+import com.kai.practice.clinic_practice.web.dto.patient.PatientCreateRequest;
+import com.kai.practice.clinic_practice.web.dto.patient.PatientMapper;
+import com.kai.practice.clinic_practice.web.dto.patient.PatientResponse;
+import com.kai.practice.clinic_practice.web.dto.patient.PatientUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

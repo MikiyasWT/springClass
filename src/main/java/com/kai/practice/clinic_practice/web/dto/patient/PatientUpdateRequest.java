@@ -1,4 +1,4 @@
-package com.kai.practice.clinic_practice.web.dto;
+package com.kai.practice.clinic_practice.web.dto.patient;
 
 import jakarta.validation.constraints.NotBlank;
 
