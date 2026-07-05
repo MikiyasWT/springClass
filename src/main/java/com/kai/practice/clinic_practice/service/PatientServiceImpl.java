@@ -1,7 +1,9 @@
 package com.kai.practice.clinic_practice.service;
 
 import com.kai.practice.clinic_practice.model.Patient;
+import com.kai.practice.clinic_practice.model.Visit;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -77,5 +79,15 @@ public class PatientServiceImpl implements PatientService {
         patientRepository.deleteById(id);
         return true;
 
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<List<Visit>> getVisitsByPatientId(String patientId) {
+          return patientRepository.findById(patientId)
+            .map(patient -> {
+                List<Visit> visits = patient.getVisits();
+                return visits != null? visits : List.of();
+            });
     }
 }
