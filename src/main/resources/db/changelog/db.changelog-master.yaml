@@ -1,0 +1,133 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-patients-table
+      author: mekeyus
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: patients
+      changes:
+        - createTable:
+            tableName: patients
+            columns:
+              - column:
+                  name: id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: given_name
+                  type: varchar(255)
+              - column:
+                  name: family_name
+                  type: varchar(255)
+  - changeSet:
+      id: 002-create-providers-table
+      author: mekeyus
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: providers
+      changes:
+        - createTable:
+            tableName: providers
+            columns:
+              - column:
+                  name: id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: given_name
+                  type: varchar(255)
+              - column:
+                  name: family_name
+                  type: varchar(255)
+              - column:
+                  name: specialty
+                  type: varchar(255)                  
+  - changeSet:
+      id: 003-create-visits-table
+      author: mekeyus
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: visits
+      changes:
+        - createTable:
+            tableName: visits
+            columns:
+              - column:
+                  name: id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: patient_id
+                  type: varchar(255)
+              - column:
+                  name: provider_id
+                  type: varchar(255)
+              - column:
+                  name: visit_date
+                  type: date
+              - column:
+                  name: reason
+                  type: varchar(255)
+        - addForeignKeyConstraint:
+            baseTableName: visits
+            baseColumnNames: patient_id
+            referencedTableName: patients
+            referencedColumnNames: id
+            constraintName: fk_visits_patient
+        - addForeignKeyConstraint:
+            baseTableName: visits
+            baseColumnNames: provider_id
+            referencedTableName: providers
+            referencedColumnNames: id
+            constraintName: fk_visits_provider   
+  - changeSet:
+      id: 004-create-addressess-table
+      author: mekeyus
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: addressess
+      changes:
+        - createTable:
+            tableName: addressess
+            columns:
+              - column:
+                  name: id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: patient_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: line1
+                  type: varchar(255)
+              - column:
+                  name: city
+                  type: varchar(255)
+              - column:
+                  name: country
+                  type: varchar(255)
+        - addForeignKeyConstraint:
+            baseTableName: addressess
+            baseColumnNames: patient_id
+            referencedTableName: patients
+            referencedColumnNames: id
+            constraintName: fk_addressess_patient   
